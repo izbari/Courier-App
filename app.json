@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "Kuryep",
+    "slug": "Kuryep",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
