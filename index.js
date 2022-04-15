@@ -1,8 +1,22 @@
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
 
-import App from './src/navigations/AuthStack.js';
+//Redux
+import { createStore, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+//Redux saga
+import rootSaga from "./src/sagas/rootSaga";
+
+import createSagaMiddleware from "redux-saga";
+import allReducers from "./src/reducers";
+import App from "./src/navigations/root";
+const sagaMiddleware = createSagaMiddleware();
+let store = createStore(allReducers, applyMiddleware(sagaMiddleware));
+
+const AppRoot = () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+sagaMiddleware.run(rootSaga);
+registerRootComponent(AppRoot);
