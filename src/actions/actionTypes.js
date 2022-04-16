@@ -1,6 +1,12 @@
 export const INCREMENT = 'INCREMENT';
 export const DECREMENT = 'DECREMENT';
-export const LOGIN = 'LOGIN';
-export const LOGOUT = 'LOGOUT';
-export const REGISTER = 'REGISTER';
-export const GET_USER = 'GET_USER';
+export const userActionTypes = {
+    LOG_IN_START: 'LOG_IN_START',
+    LOG_IN_SUCCESS: 'LOG_IN_SUCCESS',
+    LOG_IN_FAILURE: 'LOG_IN_FAILURE',
+    REGISTER_START: 'REGISTER_START',
+    REGISTER_SUCCESS: 'REGISTER_SUCCESS',
+    REGISTER_FAILURE: 'REGISTER_FAILURE',
+    LOG_OUT: 'LOG_OUT',
+  };
+  

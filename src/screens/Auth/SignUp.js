@@ -7,12 +7,15 @@ import {
   KeyboardAvoidingView,
   Button,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { registerStart } from "../../actions";
 import { TextInput, Text } from "react-native-paper";
 import Icon from "@expo/vector-icons/Ionicons";
 import { auth } from "../../../firebase";
 //main methods
 function Signup(props) {
   //States ,effects, vars
+  const dispatch = useDispatch();
   const [bireysel, setBireysel] = useState({
     type: "bireysel",
     name: "",
@@ -519,22 +522,20 @@ function Signup(props) {
               switch (selection) {
                 case "Bireysel":
                 console.log(bireysel)
-                auth.createUserWithEmailAndPassword(bireysel.email, bireysel.password).then(a=>{"a",a}).catch(b=>{console.log("b",b)})
+                dispatch(registerStart(bireysel));
                 break;
                 case "Kurumsal":
                   console.log(kurumsal)
-                  props.onRegister(kurumsal);
-
+                  dispatch(registerStart(kurumsal));
                   break;
                 case "Restoran":
                   console.log(restoran)
-                  props.onRegister(restoran);
-
+                  dispatch(registerStart(restoran));
                   break;
               }
             } else if (progress == 3 && selection == "Kurye") {
               //props.navigation.navigate("Home");
-              props.onRegister(kurye);
+                dispatch(registerStart(kurye));
             } else {
               setProgress(progress + 1);
             }

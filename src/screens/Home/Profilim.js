@@ -10,7 +10,10 @@ import {
 import React from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Icon from '@expo/vector-icons/Ionicons';
-const ProfileScreen = ({favList, watchList}) => {
+import { logOut } from '../../actions';
+import { useDispatch } from 'react-redux';
+const ProfileScreen = () => {
+  const dispatch = useDispatch();
   return (
     <SafeAreaProvider style={styles.container}>
       <ImageBackground
@@ -86,7 +89,7 @@ const ProfileScreen = ({favList, watchList}) => {
   
       <View style={styles.buttonView}>
               <Pressable
-                onPress={() => {}}
+                onPress={() => {dispatch(logOut())}}
                 android_ripple={{color: 'black', borderless: true}}
                 style={styles.loginButton}>
                 <Text style={styles.buttonText}>Log Out</Text>

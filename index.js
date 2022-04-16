@@ -3,7 +3,8 @@ import { registerRootComponent } from "expo";
 //Redux
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
-
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 //Redux saga
 import rootSaga from "./src/sagas/rootSaga";
 

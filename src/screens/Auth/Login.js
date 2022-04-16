@@ -1,35 +1,46 @@
 import * as React from "react";
 import {
-  ScrollView,
-  StyleSheet,
+  
   View,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
 } from "react-native";
 import { TextInput, Text, Button, TouchableRipple } from "react-native-paper";
 import Icon from "@expo/vector-icons/Ionicons";
+import { useDispatch } from "react-redux";
+import { logInStart } from "../../actions";
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
+import { initializeApp, getApp } from 'firebase/app';
+import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
+import Pin from '../../components/smsPin';
 //main methods
 function Signup(props) {
-  //States ,effects, vars
+  //States ,effects, vars// Firebase references
+const app = getApp();
+const auth = getAuth();
+
+// Double-check that we can run the example
+if (!app?.options || Platform.OS === 'web') {
+  throw new Error('This example only works on Android or iOS, and requires a valid Firebase config.');
+}
+
+  const dispatch = useDispatch();
   const [password, setPassword] = React.useState("");
-  const [passwordAgain, setPasswordAgain] = React.useState("");
   const [phone, setPhone] = React.useState("");
-  const [progress, setProgress] = React.useState(0);
   const [selection, setSelection] = React.useState("Bireysel");
   const [secret, setSecret] = React.useState(false);
-  const [visible, setVisible] = React.useState(false);
-  const [bottom, setBottom] = React.useState(true);
-  const hideModal = () => {
-    setVisible(false);
-    setBottom(true);
-  };
-  const [name, setName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-
-  const [passwordOutlineColor, setPasswordOutlineColor] =
-    React.useState("black");
-  console.log("rerender");
+  const [progress,setProgress] = React.useState(0);
+  const recaptchaVerifier = React.useRef(null);
+  const [verificationId, setVerificationId] = React.useState();
+  const [verificationCode, setVerificationCode] = React.useState('');
+console.log(verificationCode)
+  const firebaseConfig = app ? app.options : undefined;
+  const [message, showMessage] = React.useState();
+  const attemptInvisibleVerification = false;
+ 
+  console.log("rerender",selection,);
   const SelectionButton = ({ title }) => {
     const isSelected = selection == title;
     return (
@@ -67,7 +78,7 @@ function Signup(props) {
   );
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       behavior="padding"
       style={{ flex: 1, backgroundColor: "#fff", paddingTop: 50 }}
     >
@@ -90,7 +101,17 @@ function Signup(props) {
         <Text style={styles.header}>Giriş Yap</Text>
       </View>
 
+        {progress == 1 && <Pin  setProgress={setProgress} verificationId={verificationId} verificationCode={verificationCode} setVerificationCode={setVerificationCode}/>}
+     {progress == 0 && <>
       <ButtonContainer />
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={app.options}
+        title='Prove you are human!'
+        cancelLabel='Close'
+      />
+    
+
       <View
         style={{
           backgroundColor: "#ededed",
@@ -112,7 +133,12 @@ function Signup(props) {
           style={styles.input}
           mode="outlined"
           label="Telefon no"
-          value={name}
+          placeholder="+90 ___ ___ ___"
+        autoFocus
+        autoCompleteType="tel"
+        keyboardType="phone-pad"
+        textContentType="telephoneNumber"
+          value={phone}
           theme={{
             colors: {
               placeholder: "black",
@@ -122,36 +148,13 @@ function Signup(props) {
               background: "white",
             },
           }}
-          onChangeText={(name) => setName(name)}
+          onChangeText={setPhone}
         />
-        <TextInput
-          value={password}
-          mode="outlined"
-          onChangeText={(password) => {
-            setPassword(password);
-          }}
-          secureTextEntry={secret}
-          label="Şifre"
-          style={styles.input}
-          theme={{
-            colors: {
-              placeholder: "black",
-              text: "black",
-              primary: passwordOutlineColor,
-              underlineColor: "transparent",
-              background: "#003489",
-            },
-          }}
-          right={
-            <TextInput.Icon
-              forceTextInputFocus={false}
-              onPress={() => setSecret(!secret)}
-              name={secret ? "eye-off" : "eye"}
-              color="grey"
-              style={{ marginTop: 15 }}
-            />
-          }
-        />
+       <FirebaseRecaptchaBanner
+  textStyle={{ fontSize: 13, opacity: 1,paddingHorizontal:10,paddingVertical:5 }}
+  linkStyle={{ fontWeight: 'bold' }}
+/>
+
         <TouchableOpacity
           style={{
             flexDirection: "row",
@@ -165,19 +168,42 @@ function Signup(props) {
             backgroundColor: "black",
           }}
           mode="outlined"
-          onPress={() => {
-            props.navigation.navigate("Home");
+          onPress={async() => {
+             // The FirebaseRecaptchaVerifierModal ref implements the
+          // FirebaseAuthApplicationVerifier interface and can be
+          // passed directly to `verifyPhoneNumber`.
+          try {
+            const phoneProvider = new PhoneAuthProvider(auth);
+            const verificationId = await phoneProvider.verifyPhoneNumber(
+              phone,
+              recaptchaVerifier.current,
+              60000,
+            );
+            setVerificationId(verificationId);
+            setProgress(1);
+            // showMessage({
+            //   text: 'Verification code has been sent to your phone.',
+            // });
+          } catch (err) {
+            showMessage("Geçersiz bir telefon mumarası girdiniz.");
+            setTimeout(() => {showMessage("")},10000)
+           console.log(err.message)
+            // showMessage({ text: `Error: ${err.message}`, color: 'red' });
+          }
+           //dispatch(logInStart({  phone, password} ));
           }}
         >
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
-            Giriş Yap
+            Kodu Yolla
           </Text>
         </TouchableOpacity>
+        {message ? <Text style={{alignSelf:'center',color:'red'}}>{message}</Text>:null}
         <View
           style={{
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
+            marginTop:20
           }}
         >
           <Text>Hesabınız yok mu ? </Text>
@@ -213,7 +239,8 @@ function Signup(props) {
           </TouchableRipple>
         </View>
       </View>
-    </KeyboardAvoidingView>
+      </>}
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({

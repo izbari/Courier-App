@@ -1,26 +1,28 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { navigationRef } from "./rootNavigation";
 import AuthStackScreens from "./AuthStack";
 import HomeTab from "./HomeTab";
-
+import { useSelector } from "react-redux";
 function Root() {
+  const isLoggedIn = useSelector(
+    (state) => state.authReducers.currentUser
+  );
+  console.log(isLoggedIn)
   const Stack = createNativeStackNavigator();
   const options = { headerShown: false };
-  const isSignedIn = false;
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator options={options}>
-        {!isSignedIn ? (
+        {isLoggedIn ? (
+          <Stack.Screen name="Home" component={HomeTab} options={options} />
+        ) : (
           <Stack.Screen
             name="Auth"
             component={AuthStackScreens}
             options={options}
           />
-        ) : (
-          <Stack.Screen name="Home" component={HomeTab} options={options} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

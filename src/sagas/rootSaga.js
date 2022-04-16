@@ -1,7 +1,8 @@
 import { delay } from "redux-saga";
-import { all } from "redux-saga/effects";
-import { watchDecrement, watchIncrement } from "./counterSagas";
+import { all,call } from "redux-saga/effects";
+
+import { authSagas} from "./authSagas";
 
 export default function* rootSaga() {
-  yield all([watchDecrement(), watchIncrement()]);
+  yield all([call(authSagas)]);
 }
