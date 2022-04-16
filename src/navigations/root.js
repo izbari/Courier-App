@@ -9,7 +9,7 @@ import HomeTab from "./HomeTab";
 function Root() {
   const Stack = createNativeStackNavigator();
   const options = { headerShown: false };
-  const isSignedIn = true;
+  const isSignedIn = false;
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator options={options}>

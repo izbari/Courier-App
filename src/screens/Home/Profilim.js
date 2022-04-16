@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-
+import Icon from '@expo/vector-icons/Ionicons';
 const ProfileScreen = ({favList, watchList}) => {
   return (
     <SafeAreaProvider style={styles.container}>
@@ -25,6 +25,7 @@ const ProfileScreen = ({favList, watchList}) => {
             uri: 'https://avatars.githubusercontent.com/u/73957984?v=4',
           }}
         />
+        <Icon name='arrow-back' size={30} color='#fff' style={{position:'absolute',left:20,top:20}}/>
         {/* <TouchableOpacity style={styles.settings}>
           <Icon name="more" size={30} color="black" />
         </TouchableOpacity> */}
@@ -66,6 +67,22 @@ const ProfileScreen = ({favList, watchList}) => {
         </View>
       </View>
 
+      <View style={styles.buttonView}>
+              <Pressable
+                onPress={() => {}}
+                android_ripple={{color: 'black', borderless: true}}
+                style={styles.loginButton}>
+                <Text style={styles.buttonText}>Adreslerim</Text>
+              </Pressable>
+            </View>
+      <View style={styles.buttonView}>
+              <Pressable
+                onPress={() => {}}
+                android_ripple={{color: 'black', borderless: true}}
+                style={styles.loginButton}>
+                <Text style={styles.buttonText}>Ödeme Yöntemlerim</Text>
+              </Pressable>
+            </View>
   
       <View style={styles.buttonView}>
               <Pressable
