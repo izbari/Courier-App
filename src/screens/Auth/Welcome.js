@@ -6,9 +6,26 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import { database } from "../../../firebase";
+import React, { useEffect } from "react";
+import { getDatabase, ref, set,get } from 'firebase/database';
 const { height } = Dimensions.get("window");
+
+
 const Welcome = (props) => {
+
+
+     
+  const database = getDatabase();
+
+   
+  
+
+  useEffect(() => {
+    get(ref(database, 'users/' +"a")).then(a=>{console.log(a)});
+  }
+
+  ,[]);
   const uri =
     "https://images.unsplash.com/photo-1543499459-d1460946bdc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZGVsaXZlcnklMjBtYW58ZW58MHx8MHx8&w=1000&q=80";
   return (

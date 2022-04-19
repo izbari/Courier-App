@@ -4,20 +4,24 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDKLVzbIFNaJam7dYo-Y0nLljgyopgyq20",
-  
-    authDomain: "kuryeapp-423fe.firebaseapp.com",
-  
-    projectId: "kuryeapp-423fe",
-  
-    storageBucket: "kuryeapp-423fe.appspot.com",
-  
-    messagingSenderId: "191243886490",
-  
-    appId: "1:191243886490:web:6016496e2f1acd473e2423",
-  
-    measurementId: "G-8HNY3XL9B4",
-  };
+
+  apiKey: "AIzaSyA-e91uvT1QujmKBmCNpsZcqOow_zA5kcg",
+
+  authDomain: "kuryepp.firebaseapp.com",
+
+  projectId: "kuryepp",
+
+  storageBucket: "kuryepp.appspot.com",
+
+  messagingSenderId: "506334613063",
+
+  appId: "1:506334613063:web:b22e9e5afd877fb6202b62",
+
+  measurementId: "G-3RRJBXPVP5"
+
+};
+
+
 
 let app;
 

@@ -6,6 +6,7 @@ import Kurye from "../screens/Home/Kurye";
 import Profilim from "../screens/Home/Profilim";
 import Siparişlerim from "../screens/Home/Siparişlerim";
 import Icon from "@expo/vector-icons/Fontisto";
+import ChooseLocation from "../screens/Home/ChooseLocation";
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
         component={Kurye}
         screenOptions={{ headerShown: "false" }}
       />
+      <Tab.Screen name="ChooseLocation" component={ChooseLocation} />
       <Tab.Screen
         name="Siparişlerim"
         component={Siparişlerim}

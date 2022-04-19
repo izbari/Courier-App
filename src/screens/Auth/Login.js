@@ -164,7 +164,7 @@ console.log(verificationCode)
             alignSelf: "center",
             justifyContent: "center",
             borderRadius: 10,
-            marginVertical: 30,
+            marginVertical: 20,
             backgroundColor: "black",
           }}
           mode="outlined"
@@ -203,7 +203,7 @@ console.log(verificationCode)
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            marginTop:20
+            marginTop:10
           }}
         >
           <Text>Hesabınız yok mu ? </Text>
@@ -215,7 +215,7 @@ console.log(verificationCode)
           </TouchableRipple>
         </View>
 
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        {/* <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableRipple
             style={{
               width: 120,
@@ -237,7 +237,7 @@ console.log(verificationCode)
               Şifremi Unuttum
             </Text>
           </TouchableRipple>
-        </View>
+        </View> */}
       </View>
       </>}
     </ScrollView>

@@ -5,6 +5,7 @@ import { navigationRef } from "./rootNavigation";
 import AuthStackScreens from "./AuthStack";
 import HomeTab from "./HomeTab";
 import { useSelector } from "react-redux";
+import { Provider } from "react-native-paper";
 function Root() {
   const isLoggedIn = useSelector(
     (state) => state.authReducers.currentUser
@@ -13,19 +14,21 @@ function Root() {
   const Stack = createNativeStackNavigator();
   const options = { headerShown: false };
   return (
-    <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator options={options}>
-        {isLoggedIn ? (
-          <Stack.Screen name="Home" component={HomeTab} options={options} />
-        ) : (
-          <Stack.Screen
-            name="Auth"
-            component={AuthStackScreens}
-            options={options}
-          />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider>
+      <NavigationContainer ref={navigationRef}>
+        <Stack.Navigator options={options}>
+          {!isLoggedIn ? (
+            <Stack.Screen name="Home" component={HomeTab} options={options} />
+          ) : (
+            <Stack.Screen
+              name="Auth"
+              component={AuthStackScreens}
+              options={options}
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      </Provider>
   );
 }
 
