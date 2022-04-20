@@ -6,11 +6,11 @@ import AuthStackScreens from "./AuthStack";
 import HomeTab from "./HomeTab";
 import { useSelector } from "react-redux";
 import { Provider } from "react-native-paper";
+import UygunKurye from "../screens/Home/UygunKurye";
+import Ödeme from "../screens/Home/Ödeme";
 function Root() {
-  const isLoggedIn = useSelector(
-    (state) => state.authReducers.currentUser
-  );
-  console.log(isLoggedIn)
+  const isLoggedIn = useSelector((state) => state.authReducers.currentUser);
+  console.log(isLoggedIn);
   const Stack = createNativeStackNavigator();
   const options = { headerShown: false };
   return (
@@ -18,7 +18,21 @@ function Root() {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator options={options}>
           {!isLoggedIn ? (
+            <>
             <Stack.Screen name="Home" component={HomeTab} options={options} />
+            
+              <Stack.Screen
+                name="Uygun Kurye"
+                component={UygunKurye}
+                options={options}
+              />
+              
+              <Stack.Screen
+                name="Ödeme"
+                component={Ödeme}
+                options={options}
+              />
+            </>
           ) : (
             <Stack.Screen
               name="Auth"
@@ -28,7 +42,7 @@ function Root() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      </Provider>
+    </Provider>
   );
 }
 

@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,TouchableOpacity } from 'react-native';
+import { Title } from 'react-native-paper';
 
 
 const CustomBtn = ({
@@ -13,7 +14,7 @@ const CustomBtn = ({
      onPress={onPress}
      style={{...styles.btnStyle, ...btnStyle}}
      >
-         <Text>{btnText}</Text>
+         <Title>{btnText}</Title>
      </TouchableOpacity>
     );
 };

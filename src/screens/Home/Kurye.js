@@ -8,6 +8,8 @@ import {
   ScrollView,
   Image,
   TextInput,
+  Alert,
+
   Platform,
 } from "react-native";
 import MapView, { Marker, AnimatedRegion } from "react-native-maps";
@@ -19,6 +21,7 @@ import { navigate } from "../../navigations/rootNavigation";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Message from "../../helper/helperFunction";
+import { Distance, Time } from "../../helper/time";
 import {
   Dialog,
   Portal,
@@ -27,7 +30,8 @@ import {
   Headline,
   Caption,
   Subheading,
-  IconButton
+  IconButton,
+  Paragraph,
 } from "react-native-paper";
 import AddressPickup from "../../components/AddressPickup";
 import CustomBtn from "../../components/CustomBtn";
@@ -43,11 +47,15 @@ const Home = ({ navigation, route }) => {
   const [info, setInfo] = useState({
     type: "",
     description: "",
+    vehicleType: "",
+    pickupCords: {},
+    destinationCords: {},
+    completed: false,
   });
   const [visible, setVisible] = React.useState({
     message: false,
-    messageText:"",
-    messageStatus:"",
+    messageText: "",
+    messageStatus: "",
     dialog: false,
   });
 
@@ -69,66 +77,23 @@ const Home = ({ navigation, route }) => {
     distance: 0,
     heading: 0,
   });
-  const showMessage = (text,status) => { 
-    setVisible({ ...state, message: true, messageText: text, messageStatus: status });
-      setTimeout(() => {
-        setVisible({ ...visible, message: false,messageStatus:'error' ,messageText:null });
-      }, 3000);
-   }
-  const checkValid = () => {
-    if (Object.keys(state.pickupCords).length === 0) {
-      showMessage(
-        "Lütfen başlangıç noktasını seçiniz.",
-         "error",
-      );
-      return false;
-    } else if (Object.keys(state.destinationCords).length === 0) {
-      showMessage(
-       "Lütfen varış noktasını seçiniz.",
-       "error",
-      );
-      
-      return false;
-    }else if(info.description === "" || info.type === "" ||  (info.type =='Diğer'&& info.otherTypeInfo === "")) {
-      showMessage(
-        "Lütfen paket içeriğiyle ilgili alanları doldurun.",
-        "error",
-       );
-      return false;
-    
-    }
-    return true;
-  };
-
-  const onDone = () => {
-    const isValid = checkValid();
-    if (isValid) {
-     setVisible({...visible,dialog:false});
-    }
-  };
-  const fetchDestinationCords = (lat, lng, zipCode, cityText) => {
-    console.log("zip code==>>>", zipCode);
-    console.log("city texts", cityText);
-    setState({
+  const showMessage = (text, status) => {
+    setVisible({
       ...state,
-      destinationCords: {
-        latitude: lat,
-        longitude: lng,
-      },
+      message: true,
+      messageText: text,
+      messageStatus: status,
     });
+    setTimeout(() => {
+      setVisible({
+        ...visible,
+        message: false,
+        messageStatus: "error",
+        messageText: null,
+      });
+    }, 3000);
   };
-  const fetchPickupCords = (lat, lng, zipCode, cityText) => {
-    console.log("zip code==>>>", zipCode);
-    console.log("city texts", cityText);
-    setState({
-      ...state,
-      pickupCords: {
-        latitude: lat,
-        longitude: lng,
-      },
-    });
-  };
-
+  
   const {
     curLoc,
     time,
@@ -139,6 +104,56 @@ const Home = ({ navigation, route }) => {
     coordinate,
     heading,
   } = state;
+  const checkValid = () => {
+    if (Object.keys(info.pickupCords).length === 0) {
+      showMessage("Lütfen başlangıç noktasını seçiniz.", "error");
+      return false;
+    } else if (Object.keys(info.destinationCords).length === 0) {
+      showMessage("Lütfen varış noktasını seçiniz.", "error");
+
+      return false;
+    } else if (
+      info.description === "" ||
+      info.type === "" ||
+      info.vehicleType === "" ||
+      (info.type == "Diğer" && info.otherTypeInfo === "")
+    ) {
+      showMessage("Lütfen tüm alanları doldurun.", "error");
+      return false;
+    }
+    return true;
+  };
+
+  const onDone = () => {
+    const isValid = checkValid();
+    if (isValid) {
+      setVisible({ ...visible, dialog: false });
+      setInfo({ ...info, completed: true });
+      setState({ ...state, destinationCords: info.destinationCords,pickupCords: info.pickupCords });
+    }
+  };
+  const fetchDestinationCords = (lat, lng, zipCode, cityText) => {
+    console.log("zip code==>>>", zipCode);
+    console.log("city texts", cityText);
+    setInfo({
+      ...info,
+      destinationCords: {
+        latitude: lat,
+        longitude: lng,
+      },
+    });
+  };
+  const fetchPickupCords = (lat, lng, zipCode, cityText) => {
+    console.log("zip code==>>>", zipCode);
+    console.log("city texts", cityText);
+    setInfo({
+      ...info,
+      pickupCords: {
+        latitude: lat,
+        longitude: lng,
+      },
+    });
+  };
 
   const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
@@ -180,9 +195,11 @@ const Home = ({ navigation, route }) => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  const onPressLocation = () => {
+  const handleForm = () => {
     // navigate("ChooseLocation");
     setVisible({ ...visible, dialog: true });
+    setInfo({ ...info, completed: false, pickupCords: {}, destinationCords: {} });
+
   };
 
   const fetchValue = ({ destinationCords, pickupCords }) => {
@@ -213,7 +230,10 @@ const Home = ({ navigation, route }) => {
         longitudeDelta: LONGITUDE_DELTA,
       });
     } else {
-     showMessage("Paketinizin alınacağı adres ve gönderileceği adresi giriniz.","error");
+      showMessage(
+        "Paketinizin alınacağı adres ve gönderileceği adresi giriniz.",
+        "error"
+      );
     }
   };
 
@@ -226,13 +246,18 @@ const Home = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {distance !== 0 && time !== 0 && (
-        <View style={{ alignItems: "center", marginVertical: 16 }}>
-          <Text>Time left: {time.toFixed(0)} mt </Text>
-          <Text>Distance left: {distance.toFixed(0)}</Text>
+      {distance !== 0 && time !== 0 && info.completed && (
+        <View style={{ alignItems: "center", marginVertical: 5 }}>
+          <Paragraph>Ortalama süre : {Time(time.toFixed(0))}dk </Paragraph>
+          <Paragraph>Ortalama Mesafe: {Distance(distance.toFixed(0))}</Paragraph>
         </View>
       )}
       <Portal>
+        <Message
+          title={visible.messageText}
+          status={visible.messageStatus}
+          visible={visible.message}
+        />
         <Dialog
           style={{
             flexGrow: 1,
@@ -240,23 +265,52 @@ const Home = ({ navigation, route }) => {
             alignSelf: "center",
           }}
           visible={visible.dialog}
-          onDismiss={() => setVisible({ ...visible, dialog: false })}
+          dismissable={false}
         >
           <Dialog.Content>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="always"
             >
-              <IconButton icon="close"
-              style={{position:'absolute',top:-5,right:-5}}
-                  color={"#a3a2a7"}
-                  size={20}
-                  onPress={() => setVisible({ ...visible, dialog: false })}
+              <IconButton
+                icon="close"
+                style={{ position: "absolute", top: -5, right: -5 }}
+                color={"#a3a2a7"}
+                size={20}
+                onPress={() => {
+                  Alert.alert("Uyarı","Bilgileriniz temizlenecek emin misiniz",    [
+                    {
+                      text: "Tamam",
+                      style: "destructive",
+                      onPress: () => {
+                        setVisible({ ...visible, dialog: false });
+                        setInfo({  type: "",
+                        description: "",
+                        vehicleType: "",
+                        pickupCords: {},
+                        destinationCords: {},
+                        completed: false,});
+                        setState({ ...state, destinationCords: {},pickupCords: {} });
+                        
+                       }
+                    },
+                    {
+                      text: "İptal",
+                      style: "cancel",
+                    },
+                  ],
+                  {
+                    cancelable: true,});
+                  
+                }}
               />
-              
-              
+
               <Title
-                style={{ alignSelf: "center", fontSize: 20, marginVertical: 20 }}
+                style={{
+                  alignSelf: "center",
+                  fontSize: 20,
+                  marginVertical: 20,
+                }}
               >
                 İşlem Formu
               </Title>
@@ -269,14 +323,67 @@ const Home = ({ navigation, route }) => {
                 placheholderText="📍 Paketin teslim edileceği adres"
                 fetchAddress={fetchDestinationCords}
               />
-              <Caption>Paketin içeriğini seçiniz</Caption>
+
+              
+
+              <RadioButton.Group
+
+                onValueChange={(newValue) =>
+                  setInfo({ ...info, vehicleType: newValue })
+                }
+                value={info.vehicleType}
+              >
+                <View                 style={{ marginVertical: 10 }}
+><Caption>Paketin içeriğini seçiniz</Caption>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <RadioButton value="Motor" />
+                  <Text>Motor</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <RadioButton value="Araba" />
+                  <Text>Araba</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <RadioButton value="Kamyon" />
+                  <Text>Kamyon</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <RadioButton value="Transit" />
+                  <Text>Transit</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <RadioButton value="Diğer" />
+                  <Text>Diğer</Text>
+                </View>
+                </View>
+              </RadioButton.Group>
+              {info.vehicleType == "Diğer" && (
+                <TextInput
+                  onChangeText={(value) =>
+                    setInfo({ ...info, vehicleType: value })
+                  }
+                  value={info.vehicleType}
+                  multiline
+                  style={{
+                    backgroundColor: "#f3f3f3",
+                    padding: 8,
+                    borderRadius: 5,
+                    marginVertical: 15,
+                  }}
+                  placeholder="Uygun aracın tipini giriniz"
+                />
+              )}
+
 
               <RadioButton.Group
                 onValueChange={(newValue) =>
                   setInfo({ ...info, type: newValue })
                 }
                 value={info.type}
-              >
+                >
+                                  <View                 style={{ marginVertical: 10 }}>
+
+                <Caption>Paketin içeriğini seçiniz</Caption>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <RadioButton value="Zarf/Mektup" />
                   <Text>Zarf/Mektup</Text>
@@ -297,41 +404,51 @@ const Home = ({ navigation, route }) => {
                   <RadioButton value="Diğer" />
                   <Text>Diğer</Text>
                 </View>
-                {info.type == "Diğer" && (
+                </View>
+              </RadioButton.Group>
+              {info.type == "Diğer" && (
+                <View style={{marginBottom:10}}>
+                  <Caption>Paketin içeriğini seçiniz</Caption>
+
                   <TextInput
                     onChangeText={(value) =>
                       setInfo({ ...info, otherTypeInfo: value })
                     }
+                    value={info.otherTypeInfo}
                     multiline
                     style={{
                       backgroundColor: "#f3f3f3",
                       padding: 8,
                       borderRadius: 5,
-                      marginVertical: 15,
+                      marginVertical: 5,
                     }}
                     placeholder="Göndereceğiniz ürün kategorisi"
                   />
-                )}
-                <Caption>Paketin içeriğini hakkında detaylı bilgi</Caption>
-                <TextInput
-                  onChangeText={(value) =>
-                    setInfo({ ...info, description: value })
-                  }
-                  multiline
-                  style={{
-                    backgroundColor: "#f3f3f3",
-                    padding: 8,
-                    borderRadius: 5,
-                    marginVertical: 5,
-                  }}
-                  placeholder="Koli gönderiyorum. İçinde kitaplar var..."
-                />
-                <CustomBtn
-                  btnText="Done"
-                  onPress={onDone}
-                  btnStyle={{ marginTop: 24 }}
-                />
-              </RadioButton.Group>
+                </View>
+              )}
+                              
+
+              <Caption>Paketin içeriğini hakkında detaylı bilgi</Caption>
+              <TextInput
+                onChangeText={(value) =>
+                  setInfo({ ...info, description: value })
+                }
+                value={info.description}
+                multiline
+                style={{
+                  backgroundColor: "#f3f3f3",
+                  padding: 8,
+                  borderRadius: 5,
+                  marginVertical: 5,
+                }}
+                placeholder="Koli gönderiyorum. İçinde kitaplar var..."
+              />
+           
+              <CustomBtn
+                btnText="Formu tamamla"
+                onPress={onDone}
+                btnStyle={{ marginTop: 24 }}
+              />
             </ScrollView>
           </Dialog.Content>
         </Dialog>
@@ -407,15 +524,11 @@ const Home = ({ navigation, route }) => {
               />
             )}
         </MapView>
-        <Message
-          title={visible.messageText}
-          status={visible.messageStatus}
-          visible={visible.message}
-        />
+
         <TouchableOpacity
           style={{
             position: "absolute",
-            bottom: 130,
+            bottom: info.completed ? 190 : 130,
             right: 15,
           }}
           onPress={() => onCenter(pickupCords)}
@@ -428,7 +541,7 @@ const Home = ({ navigation, route }) => {
         <TouchableOpacity
           style={{
             position: "absolute",
-            bottom: 50,
+            bottom: info.completed ? 115 : 50,
             right: 0,
           }}
           onPress={() => onCenter(curLoc)}
@@ -436,10 +549,14 @@ const Home = ({ navigation, route }) => {
           <Image source={imagePath.greenIndicator} />
         </TouchableOpacity>
       </View>
-        <TouchableOpacity onPress={onPressLocation} style={styles.inpuStyle}>
-          <Text>Formu görmek için tıklayın</Text>
-        </TouchableOpacity>
-      <Loader isLoading={isLoading} />
+      {info.completed &&
+              <TouchableOpacity onPress={()=> navigate("Uygun Kurye")} style={[styles.inpuStyle,{bottom:70}]}>
+        <Subheading style={{color:"#000"}}>Uygun Kuryeleri Listele</Subheading>
+      </TouchableOpacity> }
+      <TouchableOpacity onPress={handleForm} style={styles.inpuStyle}>
+        <Subheading>Formu görmek{info.completed && " & düzenlemek"} için tıklayın</Subheading>
+      </TouchableOpacity>
+      {/* <Loader isLoading={!isLoading} /> */}
     </SafeAreaView>
   );
 };
@@ -448,25 +565,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  bottomCard: {
-    position:'absolute',
-    bottom:10,
-    backgroundColor: "white",
-    width: "100%",
-    padding: 30,
-    borderTopEndRadius: 24,
-    borderTopStartRadius: 24,
-  },
+ 
   inpuStyle: {
-    position:'absolute',
-    bottom:10,
-      width: "95%",
-      alignSelf:'center',
+    position: "absolute",
+    bottom: 10,
+    width: "95%",
+    alignSelf: "center",
     backgroundColor: "white",
     borderRadius: 4,
     borderWidth: 1,
-    borderColor:'#f3f3f3',
-    elevation:5,
+    borderColor: "#f3f3f3",
+    elevation: 5,
     alignItems: "center",
     height: 48,
     justifyContent: "center",
