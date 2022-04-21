@@ -1,5 +1,4 @@
-export const INCREMENT = 'INCREMENT';
-export const DECREMENT = 'DECREMENT';
+
 export const userActionTypes = {
     LOG_IN_START: 'LOG_IN_START',
     LOG_IN_SUCCESS: 'LOG_IN_SUCCESS',

@@ -2,13 +2,16 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { navigationRef } from "./rootNavigation";
-import Kurye from "../screens/Home/Kurye";
-import Profilim from "../screens/Home/Profilim";
-import Siparişlerim from "../screens/Home/Siparişlerim";
+import { useSelector } from "react-redux";
+import Kurye from "../screens/Home/Main/Kurye";
+import Profilim from "../screens/Home/Main/Profilim";
+import Siparişlerim from "../screens/Home/Main/Siparişlerim";
 import Icon from "@expo/vector-icons/Fontisto";
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const user = useSelector((state) => state.authReducers.currentUser);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -49,11 +52,11 @@ export default function App() {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen
+      {user?.type !== "Kurye" && <Tab.Screen
         name="Kurye Çağır"
         component={Kurye}
         screenOptions={{ headerShown: "false" }}
-      />
+      />}
       <Tab.Screen
         name="Siparişlerim"
         component={Siparişlerim}

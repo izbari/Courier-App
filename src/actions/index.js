@@ -27,7 +27,7 @@ export const registerSuccess = ({user}) => ({
 
 export const registerFailure = (error) => ({
   type: types.REGISTER_FAILURE,
-  payload: error,
+  payload: error+Math.random(),
 });
 
 export const logOut = () => ({

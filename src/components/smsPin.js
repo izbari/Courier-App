@@ -12,6 +12,7 @@ import {
   getAuth,
   PhoneAuthProvider,
   signInWithCredential,
+  signInWithPhoneNumber
 } from "firebase/auth";
 
 import {
@@ -66,7 +67,7 @@ const AnimatedExample = ({
 
   useEffect(() => {
     const timerId = setInterval(() => {
-      if (timer <= 0) console.log("bitti")
+      if (timer <= 0) return
       else  setTimer(timer-1)
     }, 1000)
     return () => clearInterval(timerId);
@@ -117,6 +118,7 @@ const AnimatedExample = ({
 
   return (
     <SafeAreaView style={styles.root}>
+            
       <Text style={styles.title}>Sms Onaylama</Text>
       <Image style={styles.icon} source={source} />
       <Text style={styles.subTitle}>Sms'e gelen kodu giriniz{"\n"}</Text>
@@ -135,13 +137,16 @@ const AnimatedExample = ({
       <TouchableOpacity
         onPress={async () => {
           try {
+            signInWithPhoneNumber
             const credential = PhoneAuthProvider.credential(
               verificationId,
               verificationCode
             );
+           
             await signInWithCredential(auth, credential).then((a) => {
-              console.warn("a", a);
+              console.log("a", a.user);
             });
+            setTimer(0)
             console.log("success");
           } catch (err) {
               console.log(err.code)
@@ -158,16 +163,20 @@ const AnimatedExample = ({
         <Text style={styles.nextButtonText}>Verify</Text>
       </TouchableOpacity>
      <View style={{justifyContent:'center',alignItems:'center'}}>
+     <Text style={{color: "#000",
+    fontSize: 25,
+    fontWeight: "700",
+    textAlign: "center",}}>{timer}</Text>
+
      {(message.length !== 0 &&
       message.code === "auth/invalid-verification-code") && (
         <Text style={{ color: "red" }}>Geçersiz kod, Tekrar Deneyin</Text>
       ) }
       {(message.length !== 0 &&
-      message.code === "auth/code-expired") && <Text 
+      message.code === "auth/code-expired" || timer == 0) && <Text 
       onPress={() => {setProgress(0); 
     setVerificationCode("");}}
       style={{ color: "red" }}>Kodun Süresi bitti, Tekrar gönder</Text>}
-      <Text>{timer}</Text>
      </View>
     </SafeAreaView>
   );
@@ -225,7 +234,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    paddingTop: 50,
+    paddingTop: 30,
     color: "#000",
     fontSize: 25,
     fontWeight: "700",
@@ -250,7 +259,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3557b7",
     justifyContent: "center",
     minWidth: 300,
-    marginBottom: 100,
+    marginBottom: 30,
   },
   nextButtonText: {
     textAlign: "center",

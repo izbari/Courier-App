@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text ,TouchableOpacity,Dimensions} from "react-native";
 import { CreditCardInput } from "react-native-credit-card-input";
-import { navigate } from "../../navigations/rootNavigation";
+import { navigate } from "../../../navigations/rootNavigation";
 const { width } = Dimensions.get("window");
 
 export default function Ödeme() {
@@ -92,6 +92,8 @@ export default function Ödeme() {
           // Kurye almaya gelince kullanıcıya bildirim gider ve sipariş artık yolda sekmesine düşer.
           // sonra ise sipariş yolda konumuna geçer.
           // sipariş yolda seknesindeki siparişe basınca haritada kuryeyi izleyebilmelidir.
+          // clientin kuryeyi yola cıktığında izleyebilmesi için kurye anlık konumu firebase'e yollayacaktır.
+          // anlık kurye datasını okuyarak kuryeyi izlememiz gerekecek.
           // KURYE ödeme alınca bildirim gider ve kuryenin aktif sipariş sayfasına düşer.
           // kurye siparişi almaya gider alınca aldım der uygulamaya kullanıcıya bildirim gider.
           // kurye siparişi teslim edince kullanıcıya tekrar edildi diye bildirim gider.

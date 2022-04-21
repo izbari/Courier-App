@@ -9,19 +9,19 @@ import {
   Image,
   TextInput,
   Alert,
-
+  LogBox,
   Platform,
 } from "react-native";
 import MapView, { Marker, AnimatedRegion } from "react-native-maps";
-import { GOOGLE_MAP_KEY } from "../../constants/googleMapKey";
-import imagePath from "../../constants/imagePath";
+import { GOOGLE_MAP_KEY } from "../../../constants/googleMapKey";
+import imagePath from "../../../constants/imagePath";
 import MapViewDirections from "react-native-maps-directions";
-import Loader from "../../components/Loader";
-import { navigate } from "../../navigations/rootNavigation";
+//import Loader from "../../components/Loader";
+import { navigate } from "../../../navigations/rootNavigation";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Message from "../../helper/helperFunction";
-import { Distance, Time } from "../../helper/time";
+import Message from "../../../helper/helperFunction";
+import { Distance, Time } from "../../../helper/time";
 import {
   Dialog,
   Portal,
@@ -33,15 +33,15 @@ import {
   IconButton,
   Paragraph,
 } from "react-native-paper";
-import AddressPickup from "../../components/AddressPickup";
-import CustomBtn from "../../components/CustomBtn";
+import AddressPickup from "../../../components/AddressPickup";
+import CustomBtn from "../../../components/CustomBtn";
 import Icon from "@expo/vector-icons/Ionicons";
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const Home = ({ navigation, route }) => {
+const Kurye = ({ navigation, route }) => {
   const mapRef = useRef();
   const markerRef = useRef();
   const [info, setInfo] = useState({
@@ -158,6 +158,7 @@ const Home = ({ navigation, route }) => {
   const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
   useEffect(() => {
+
     getLiveLocation();
     console.log("çalışyım----------------------");
   }, []);
@@ -268,7 +269,9 @@ const Home = ({ navigation, route }) => {
           dismissable={false}
         >
           <Dialog.Content>
+            
             <ScrollView
+            horizontal={false}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="always"
             >
@@ -314,15 +317,29 @@ const Home = ({ navigation, route }) => {
               >
                 İşlem Formu
               </Title>
-              <AddressPickup
+             <ScrollView
+                           contentContainerStyle={{flex: 1, width: '100%', height: '100%'}}
+
+             keyboardShouldPersistTaps="always"
+             horizontal
+             >
+             <AddressPickup
                 placheholderText="📍 Kuryenin paketi teslim alacağı adres"
                 fetchAddress={fetchPickupCords}
               />
-
+             </ScrollView>
+             <ScrollView
+              contentContainerStyle={{flex: 1, width: '100%', height: '100%'}}
+keyboardShouldPersistTaps="always"
+             horizontal
+             showsHorizontalScrollIndicator={false}
+             >
               <AddressPickup
                 placheholderText="📍 Paketin teslim edileceği adres"
                 fetchAddress={fetchDestinationCords}
+                showsHorizontalScrollIndicator={false}
               />
+              </ScrollView>
 
               
 
@@ -583,4 +600,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Kurye;

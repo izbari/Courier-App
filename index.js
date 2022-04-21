@@ -5,6 +5,11 @@ import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+LogBox.ignoreLogs(['componentWillReceiveProps has been renamed'])
+LogBox.ignoreLogs(['Cannot update a component'])
+
+
+
 //Redux saga
 import rootSaga from "./src/sagas/rootSaga";
 
@@ -19,5 +24,6 @@ const AppRoot = () => (
     <App />
   </Provider>
 );
+
 sagaMiddleware.run(rootSaga);
 registerRootComponent(AppRoot);

@@ -1,20 +1,18 @@
 import * as React from "react";
 import {
-  ScrollView,
   StyleSheet,
   View,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Pressable,
 } from "react-native";
-import { TextInput, Text, Button, TouchableRipple,Avatar,Headline, Title, Subheading } from "react-native-paper";
+import { Text,Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 //main methods
 import Icon from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import images from '../../constants/imagePath'
-import { navigate } from "../../navigations/rootNavigation";
-function Signup(props) {
+import images from '../../../constants/imagePath'
+import { navigate } from "../../../navigations/rootNavigation";
+function UygunKurye(props) {
   const [selection, setSelection] = React.useState("Aktif");
   const Card = () => { 
     return (
@@ -168,4 +166,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Signup;
+export default UygunKurye;

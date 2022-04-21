@@ -4,17 +4,23 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  Text,
 } from "react-native";
-import { TextInput, Text, Button, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 //main methods
 import Icon from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-function Signup(props) {
+function Signup({route}) {
   const [selection, setSelection] = React.useState("Aktif");
+
+  React.useEffect(() => {
+    if(route.params?.progress){
+      setSelection(route.params.progress)
+    }
+  },[route])
+
   const Card = () => { 
     return (
       <TouchableOpacity
@@ -81,6 +87,7 @@ function Signup(props) {
    }
   const SelectionButton = ({ title }) => {
     const isSelected = selection == title;
+
     return (
       <TouchableOpacity
         onPress={() => {
@@ -134,7 +141,7 @@ function Signup(props) {
      <Card />
      {selection =='Geçmiş' && <Card />}
     {selection =='Yolda' && <Card />}
-
+    
     </SafeAreaView>
   );
 }

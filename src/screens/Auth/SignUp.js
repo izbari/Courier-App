@@ -7,15 +7,33 @@ import {
   KeyboardAvoidingView,
   Button,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import Message from '../../helper/helperFunction'
+import { useDispatch , useSelector} from "react-redux";
 import { registerStart } from "../../actions";
 import { TextInput, Text } from "react-native-paper";
 import Icon from "@expo/vector-icons/Ionicons";
 import { auth } from "../../../firebase";
 //main methods
 function Signup(props) {
-  //States ,effects, vars
+ 
   const dispatch = useDispatch();
+  //States ,effects, vars
+  
+  const [handleMessage, setHandleMessage] = useState({title:"",visible:false})
+  let  errorState = useSelector((state) =>state.authReducers.error)
+  //console.log("selectır",errorState.substring(0,errorState.length-19))
+  useEffect(() => {
+  if(errorState){
+    setHandleMessage({title:errorState.substring(0,errorState.length-19),visible:true})
+
+    setTimeout(() => {
+      setHandleMessage({title:null,visible:false})
+      console.log("-------------------")
+    },3000)
+  }
+ },[errorState])
+  
+
   const [bireysel, setBireysel] = useState({
     type: "bireysel",
     name: "",
@@ -63,7 +81,7 @@ function Signup(props) {
 
   const [progress, setProgress] = useState(0);
   const [selection, setSelection] = useState("Bireysel");
-  const [secret, setSecret] = useState(false);
+  const [secret, setSecret] = useState(true);
 
   
   const SelectionButton = ({ title }) => {
@@ -107,6 +125,11 @@ function Signup(props) {
       behavior="padding"
       style={{ flex: 1, backgroundColor: "#fff", paddingTop: 50 }}
     >
+      <Message 
+      title={handleMessage.title}
+      status="error"
+      visible={handleMessage.visible}
+      />
       <View
         style={{
           flexDirection: "row",
@@ -272,7 +295,9 @@ function Signup(props) {
             <TextInput
               style={styles.input}
               mode="outlined"
+              keyboardType="number-pad"
               label="Telefon Numarası"
+              maxLength={10}
               value={() => {
                 switch (selection) {
                   case "Bireysel":
@@ -403,7 +428,7 @@ function Signup(props) {
                 <TextInput.Icon
                   forceTextInputFocus={false}
                   onPress={() => setSecret(!secret)}
-                  name={secret ? "eye-off" : "eye"}
+                  name={!secret ? "eye-off" : "eye"}
                   color="grey"
                   style={{ marginTop: 15 }}
                 />
